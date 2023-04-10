@@ -20,15 +20,19 @@ public:
     float acceleration_y;
     bool m_is_grounded;
     bool m_was_grounded;
+    int s;
     olc::vf2d size;
     olc::vf2d sprite_size;
     std::string name = "";
     float r;
     std::vector<std::unique_ptr<Entity>> collision_targets;
-
+    
+    
     Entity(olc::vf2d, Program* program);
-    void HitTest(Rect _ent_rect, Rect _rect, char _tile);
-    void FindSlopeTop(Rect _ent_rect, Rect _rect, char _tile);
+    bool RectVsRect(Rect _rect_1, Rect _rect_2);
+    bool HitTest(Rect _ent_rect, Rect _rect, char _tile);
+    void Resolve(Rect _ent_rect, Rect _rect, char _tile);
+    void SnapToGround(Rect _ent_rect, Rect _rect, char _tile);
     virtual bool CircleVsCircle(Entity* _ent, float _fElapsedTime);
     virtual void Update(Program*, float _fElapsedTime);
     virtual void Draw(Program*, float _fElapsedTime);
