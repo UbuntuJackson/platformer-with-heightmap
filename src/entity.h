@@ -33,7 +33,6 @@ public:
     bool HitTest(Rect _ent_rect, Rect _rect, char _tile);
     void Resolve(Rect _ent_rect, Rect _rect, char _tile);
     void SnapToGround(Rect _ent_rect, Rect _rect, char _tile);
-    virtual bool CircleVsCircle(Entity* _ent, float _fElapsedTime);
     virtual void Update(Program*, float _fElapsedTime);
     virtual void Draw(Program*, float _fElapsedTime);
 

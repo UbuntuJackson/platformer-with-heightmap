@@ -25,34 +25,6 @@ Entity::Entity(olc::vf2d _pos, Program* program) : pos{_pos}, program_ptr{progra
 }
 
 bool
-Entity::CircleVsCircle(Entity* _ent, float _fElapsedTime){
-
-    float dx = pos.x + vel.x * _fElapsedTime + r - (_ent->pos.x + _ent->r + _ent->vel.x * _fElapsedTime);
-    float dy = pos.y + vel.y * _fElapsedTime + r - (_ent-> pos.y + _ent->r + _ent->vel.y * _fElapsedTime);
-
-    if(std::pow(dx,2)+std::pow(dy,2) < std::pow(r+_ent->r,2)){
-        olc::vf2d full_dist = olc::vf2d(dx, dy).norm() * (r + _ent->r);
-        pos += (full_dist - olc::vf2d(dx,dy));
-        //vel = {0.0f, 0.0f};
-        //pos += (_ent-> vel) * _fElapsedTime;
-        dx = pos.x + vel.x * _fElapsedTime + r - (_ent->pos.x + _ent->r + _ent->vel.x * _fElapsedTime);
-        dy = pos.y + vel.y * _fElapsedTime + r - (_ent-> pos.y + _ent->r + _ent->vel.y * _fElapsedTime);
-        float time_1;
-        float time_2;
-        RayVsRay(pos, pos + olc::vf2d(dx, dy),
-            pos - vel, pos - vel + InverseVector(olc::vf2d(dx, dy)), time_1, time_2);
-
-        olc::vf2d rem = pos - (pos + (pos + olc::vf2d(dx, dy) - pos)*time_1);
-        vel -= rem;
-        //vel *= 0.6;
-
-        return true;
-    }
-    return false;
-
-}
-
-bool
 Entity::RectVsRect(Rect _rect_1, Rect _rect_2){
     if (
         (_rect_1.pos.x > (_rect_2.pos.x + _rect_2.size.x)) || // is the left side greater than the other rect's right side?
@@ -97,6 +69,16 @@ Entity::HitTest(Rect _ent_rect, Rect _rect, char _tile){
             return true;
             
         }
+        else{
+            if(_tile == '2'){
+                if(start_index == end_index){return true;}
+                if(end_index == 0){return true;}
+            }
+            if(_tile == '3'){
+                if(start_index == end_index){return true;}
+                if(end_index == 0){return true;}
+            }
+        }
     }
     else if(_tile == '1'){
         return true;
@@ -138,6 +120,17 @@ Entity::Resolve(Rect _ent_rect, Rect _rect, char _tile){
                 pos.y =  _rect.pos.y+_rect.size.y-*top-_ent_rect.size.y;
                 vel.y = 0.0f;
             }
+            
+        }
+        else{
+            if(_tile == '2'){
+                if(start_index == end_index){pos.y =  _rect.pos.y+_rect.size.y-32.0f-_ent_rect.size.y;}
+                if(end_index == 0){pos.y =  _rect.pos.y+_rect.size.y-0.0f-_ent_rect.size.y;}
+            }
+            if(_tile == '3'){
+                if(start_index == end_index){pos.y =  _rect.pos.y+_rect.size.y-0.0f-_ent_rect.size.y;}
+                if(end_index == 0){pos.y =  _rect.pos.y+_rect.size.y-32.0f-_ent_rect.size.y;}
+            }
         }
     }
     else if(_tile == '1'){
@@ -150,11 +143,8 @@ Entity::Resolve(Rect _ent_rect, Rect _rect, char _tile){
 
 void
 Entity::SnapToGround(Rect _ent_rect, Rect _rect, char _tile){
-    
 
     std::vector<int> valid_heights;
-
-    
 
     int start_x = int(_rect.pos.x);
     int end_x = int(_rect.pos.x + _rect.size.x);
@@ -179,6 +169,16 @@ Entity::SnapToGround(Rect _ent_rect, Rect _rect, char _tile){
         
         pos.y =  _rect.pos.y+_rect.size.y-*top-_ent_rect.size.y;
                         
+    }
+    else{
+        if(_tile == '2'){
+            if(start_index == end_index){pos.y =  _rect.pos.y+_rect.size.y-32.0f-_ent_rect.size.y;}
+            if(end_index == 0){pos.y =  _rect.pos.y+_rect.size.y-0.0f-_ent_rect.size.y;}
+        }
+        if(_tile == '3'){
+            if(start_index == end_index){pos.y =  _rect.pos.y+_rect.size.y-0.0f-_ent_rect.size.y;}
+            if(end_index == 0){pos.y =  _rect.pos.y+_rect.size.y-32.0f-_ent_rect.size.y;}
+        }
     }
     
     

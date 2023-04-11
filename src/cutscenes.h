@@ -17,6 +17,8 @@ enum CutsceneStates{
 
 class TestCutscene{
 public:
+    Program* program_ptr;
+
     int m_cutscene_step;
     bool next_button_pressed;
     std::map<std::string, Entity*> m_involved_actors;

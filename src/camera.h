@@ -17,6 +17,7 @@ enum CameraStates{
 
 class Camera{
 public:
+    Program* program_ptr;
     float scale;
     olc::vf2d pos;
     olc::vf2d vel;
