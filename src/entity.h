@@ -1,12 +1,13 @@
+
 #ifndef ENTITY
 #define ENTITY
-
-
-
-class Program;
 #include <string.h>
 #include "../include/olcPixelGameEngine.h"
 #include "rect.h"
+
+
+class Program;
+
 
 class Entity;
 
@@ -29,10 +30,10 @@ public:
     
     
     Entity(olc::vf2d, Program* program);
-    bool RectVsRect(Rect _rect_1, Rect _rect_2);
-    bool HitTest(Rect _ent_rect, Rect _rect, char _tile);
-    void Resolve(Rect _ent_rect, Rect _rect, char _tile);
-    void SnapToGround(Rect _ent_rect, Rect _rect, char _tile);
+    //bool RectVsRect(Rect _rect_1, Rect _rect_2);
+    //bool HitTest(Rect _ent_rect, Rect _rect, char _tile);
+    //void Resolve(Rect _ent_rect, Rect _rect, char _tile);
+    //void SnapToGround(Rect _ent_rect, Rect _rect, char _tile);
     virtual void Update(Program*, float _fElapsedTime);
     virtual void Draw(Program*, float _fElapsedTime);
 

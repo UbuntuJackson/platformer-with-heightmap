@@ -1,8 +1,10 @@
+
 #ifndef CAMERA
 #define CAMERA
 #include <string>
 #include "../include/olcPixelGameEngine.h"
 #include "entity.h"
+
 class Program;
 
 enum CameraStates{

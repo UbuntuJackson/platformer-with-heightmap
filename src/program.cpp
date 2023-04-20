@@ -1,15 +1,15 @@
 #define OLC_PGE_APPLICATION
-#include "../include/olcPixelGameEngine.h"
 #include "program.h"
-#include <iostream>
 #include "camera.h"
 #include "entity.h"
 #include "arena.h"
+#include "../include/olcPixelGameEngine.h"
+#include <iostream>
 
 
 //class Arena;
 
-Program::Program()
+Program::Program() : m_arena(new Arena(this))
 {
 	sAppName = "Camera";
 }
@@ -35,7 +35,8 @@ Program::OnUserCreate()
     AssetSingleton.decFont = std::make_unique<olc::Decal>(GetFontSprite());
 
     m_game_state = PLAY;
-    m_arena.LoadArena(this);
+    //m_arena(this);
+    m_arena->LoadArena(this);
 	/*entities.push_back(std::make_unique<Entity>(olc::vf2d(2.0f, 2.0f)));
     entities.push_back(std::make_unique<Entity>(olc::vf2d(1000.0f, 1000.0f)));
     entities.push_back(std::make_unique<Entity>(olc::vf2d(5.0f, 77.0f)));*/
@@ -61,7 +62,7 @@ Program::OnUserUpdate(float fElapsedTime)
             cutscene.RunCutscene(this);
             break;
         case PLAY:
-            m_arena.RunArena(this, fElapsedTime);
+            m_arena->RunArena(this, fElapsedTime);
             break;
         case PAUSE:
             break;

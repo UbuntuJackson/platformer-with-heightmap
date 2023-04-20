@@ -1,7 +1,6 @@
 
 #include "program.h"
-#include <string.h>
-#include "camera.h"
+
 int main()
 {
 	Program demo;

@@ -2,6 +2,9 @@
 #include "program.h"
 #include "../include/olcPixelGameEngine.h"
 //#include "entity.h"
+#include "collision_utils.h"
+#include "arena.h"
+
 
 Player::Player(olc::vf2d _pos, Program* program) : Entity{_pos, program}
 {
@@ -20,97 +23,51 @@ Player::Update(Program* program, float _fElapsedTime) {
     if(program->GetKey(olc::Key::LEFT).bHeld) vel.x -= acceleration_x;
     vel.y += acceleration_y;
     
+    if(program->GetKey(olc::Key::Z).bPressed) vel.y = -500.0f;
+
     vel.x *= 0.9;
-    vel.y *= 0.96;
+    vel.y *= 0.99;
 
-    std::vector<std::pair<Rect, char>> m_collision_info;
-    std::vector<std::pair<Rect, char>> m_terrain_info;
+    std::vector<CollisionStruct> collision_info;
+    std::vector<CollisionStruct> terrain_info;
 
-    m_is_grounded = false;
+    //Rect player_rect(olc::vf2d(pos.x, pos.y), size);
+    Rect player_rect(olc::vf2d(pos.x, pos.y), size);
+    collision_info = program_ptr->m_arena->m_collision_utils->GetCollisionInfo(player_rect);
 
-    for(int y = 0; y < int(program->m_arena.map_size.y); y++){
-        for(int x = 0; x < int(program->m_arena.map_size.x); x++){
-            char tile = program->m_arena.tiles[y * program->m_arena.map_size.x + x];
-            if(tile != '.'){
-                Rect player_rect(olc::vf2d(pos.x+vel.x*_fElapsedTime, pos.y), size);
-                Rect rect(olc::vf2d(float(x)*32.0f, float(y)*32.0f),olc::vf2d(32.0f, 32.0f));
-                if (RectVsRect(player_rect, rect)) m_collision_info.push_back(std::make_pair(rect, tile));    
-            }
-            
+    for(auto& info : collision_info){
+        
+        std::array<Line, 4> four_sides = {
+            Line{info.rect.pos, info.rect.pos + olc::vf2d(info.rect.size.x, 0.0f), olc::vf2d(0.0f,-1.0f)},
+            Line{info.rect.pos + olc::vf2d(info.rect.size.x, 0.0f), info.rect.pos + info.rect.size, olc::vf2d(1.0f,0.0f)},
+            Line{info.rect.pos + info.rect.size, info.rect.pos + info.rect.size - olc::vf2d(info.rect.size.x, 0.0f), olc::vf2d(0.0f,1.0f)},
+            Line{info.rect.pos + info.rect.size - olc::vf2d(info.rect.size.x, 0.0f), info.rect.pos, olc::vf2d(-1.0f,0.0f)}
+        };
+        
+        olc::vf2d collision_normal = program_ptr->m_arena->m_collision_utils->GetCollisionNormal(four_sides, Rect(player_rect.pos, player_rect.size), vel);
+        
+        if(collision_normal.y < 0.0f){
+            pos.y = info.rect.pos.y - size.y;
+        }
+        if(collision_normal.x < 0.0f){
+            pos.x = info.rect.size.x - size.y;
+        }
+        if(collision_normal.y > 0.0f){
+            pos.y = info.rect.pos.y + info.rect.size.y;
+        }
+        if(collision_normal.x > 0.0f){
+            pos.x = info.rect.pos.x + info.rect.size.x;
         }
         
-    }
-    std::sort(m_collision_info.begin(), m_collision_info.end(), [](std::pair<Rect, char> a, std::pair<Rect, char> b)
-    {
-        return a.first.pos.y > b.first.pos.y;
-    });
-
-    float y_before = pos.y;
-
-    for(auto &info : m_collision_info){
-        Rect player_rect(olc::vf2d(pos.x+vel.x*_fElapsedTime, pos.y), size);
-        if(HitTest(player_rect, info.first, info.second)) m_is_grounded = true;
-        Resolve(player_rect ,info.first, info.second);
+        vel += vel * collision_normal;
     }
     
-    m_collision_info.clear(); 
-    
-    m_was_grounded = m_is_grounded;
-    m_is_grounded = false;
     pos+=vel*_fElapsedTime;
-
-    for(int y = 0; y < int(program->m_arena.map_size.y); y++){
-        for(int x = 0; x < int(program->m_arena.map_size.x); x++){
-            char tile = program->m_arena.tiles[y * program->m_arena.map_size.x + x];
-            if(tile != '.'){
-                Rect player_rect(olc::vf2d(pos.x+vel.x*_fElapsedTime, pos.y), size);
-                Rect rect(olc::vf2d(float(x)*32.0f, float(y)*32.0f),olc::vf2d(32.0f, 32.0f));
-                Rect snap_rect(olc::vf2d(pos.x+vel.x*_fElapsedTime, pos.y+32.0f), size);
-
-                if (RectVsRect(player_rect, rect)) m_collision_info.push_back(std::make_pair(rect, tile));
-                if (RectVsRect(snap_rect, rect) && tile != '1') m_terrain_info.push_back(std::make_pair(rect, tile));       
-            }
-            
-        }
-        
-    }
-    
-    float y_after = pos.y;
-
-    for(auto &info : m_collision_info){
-        Rect player_rect(olc::vf2d(pos.x+vel.x*_fElapsedTime, pos.y), size);
-        std::cout << HitTest(player_rect, info.first, info.second) << std::endl;
-        if(HitTest(player_rect, info.first, info.second)) m_is_grounded = true;
-        
-    }
-    
-    std::sort(m_terrain_info.begin(), m_terrain_info.end(), [](std::pair<Rect, char> a, std::pair<Rect, char> b)
-    {
-        return a.first.pos.y > b.first.pos.y;
-    });
-
-    /*std::vector<std::pair<Rect, char>>::iterator max_available_slope;
-    max_available_slope = std::max_element(m_terrain_info.begin(), m_terrain_info.end(),
-        [](std::pair<Rect, char> a, std::pair<Rect, char> b)
-        {
-            return a.first.pos.y > b.first.pos.y;
-        }
-    );*/
-    
-    
-    for(auto &slope : m_terrain_info){
-        if(m_was_grounded && /*!(y_before >= y_after) &&*/ !m_is_grounded && m_terrain_info.size() != 0){
-            Rect player_rect(olc::vf2d(pos.x+vel.x*_fElapsedTime, pos.y+32.0f), size);
-            SnapToGround(player_rect, slope.first, slope.second);
-        }
-    }
-    
-    
     
 }
 
 void
 Player::Draw(Program* program, float _fElapsedTime){
-    program->camera.DrawDecal(program, olc::vf2d(pos.x, pos.y+32.0f), program -> AssetSingleton.decTestDecal.get(), _fElapsedTime);
+    //program->camera.DrawDecal(program, olc::vf2d(pos.x, pos.y+32.0f), program -> AssetSingleton.decTestDecal.get(), _fElapsedTime);
     program->camera.DrawDecal(program, pos, program -> AssetSingleton.decTestDecal.get(), _fElapsedTime);
 }

@@ -1,6 +1,6 @@
+
 #ifndef MATRIX_UTILS
 #define MATRIX_UTILS
-
 #include "../include/olcPixelGameEngine.h"
 struct mat3x3{
     float m[3][3];

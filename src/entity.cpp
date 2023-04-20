@@ -1,16 +1,14 @@
-#include <vector>
 #include "entity.h"
-#include "../include/olcPixelGameEngine.h"
 #include "program.h"
-#include <string>
 #include "matrix_utils.h"
 #include "rect.h"
-#include <algorithm>
 #include "collision_utils.h"
-#include <cmath>
-#include <math.h>
-class Program;
-//class Entity;
+#include <string>
+#include <vector>
+#include "arena.h"
+#include "../include/olcPixelGameEngine.h"
+
+
 Entity::Entity(olc::vf2d _pos, Program* program) : pos{_pos}, program_ptr{program}
 {
     sprite_size = {program_ptr->AssetSingleton.decBigDecal.get()->sprite->Size().x,
@@ -24,7 +22,7 @@ Entity::Entity(olc::vf2d _pos, Program* program) : pos{_pos}, program_ptr{progra
 
 }
 
-bool
+/*bool
 Entity::RectVsRect(Rect _rect_1, Rect _rect_2){
     if (
         (_rect_1.pos.x > (_rect_2.pos.x + _rect_2.size.x)) || // is the left side greater than the other rect's right side?
@@ -56,8 +54,8 @@ Entity::HitTest(Rect _ent_rect, Rect _rect, char _tile){
 
         for(int i = start_index; i < end_index; i++){
             
-            if(_tile == '2') valid_heights.push_back(program_ptr->m_arena.m_collision_utils.m_height_map_north_west[i]);
-            if(_tile == '3') valid_heights.push_back(program_ptr->m_arena.m_collision_utils.m_height_map_north_east[i]);
+            if(_tile == '2') valid_heights.push_back(program_ptr->m_arena->m_collision_utils->m_height_map_north_west[i]);
+            if(_tile == '3') valid_heights.push_back(program_ptr->m_arena->m_collision_utils->m_height_map_north_east[i]);
             
             
         }
@@ -182,7 +180,7 @@ Entity::SnapToGround(Rect _ent_rect, Rect _rect, char _tile){
     }
     
     
-}
+}*/
 
 void
 Entity::Update(Program* program, float _fElapsedTime){pos += vel * _fElapsedTime;}

@@ -1,6 +1,6 @@
+
 #ifndef ASSETS
 #define ASSETS
-
 #include "../include/olcPixelGameEngine.h"
 
 class Assets{

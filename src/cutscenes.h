@@ -1,6 +1,6 @@
+
 #ifndef CUTSCENES
 #define CUTSCENES
-
 #include <map>
 #include <string>
 #include "entity.h"
