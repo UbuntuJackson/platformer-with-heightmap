@@ -1,6 +1,6 @@
-main : main.o camera.o program.o entity.o assets.o matrix_utils.o cutscenes.o arena.o player.o rect.o
+main : main.o camera.o program.o entity.o assets.o matrix_utils.o cutscenes.o arena.o player.o rect.o collision_utils.o
 		g++ -g -o main main.o camera.o program.o entity.o assets.o \
-		matrix_utils.o cutscenes.o arena.o player.o rect.o \
+		matrix_utils.o cutscenes.o arena.o player.o rect.o collision_utils.o \
 		 -lX11 -lX11 -lGL -lpthread -lpng -lstdc++fs -std=c++17
 
 camera.o : ../src/camera.cpp ../src/camera.h ../src/matrix_utils.h ../src/program.h
@@ -25,5 +25,7 @@ player.o: ../src/player.cpp ../src/player.h ../src/entity.h ../src/program.h ../
 		g++ -c -g ../src/player.cpp
 rect.o: ../src/rect.cpp ../src/rect.h ../include/olcPixelGameEngine.h
 		g++ -c -g ../src/rect.cpp
+collision_utils.o: ../src/collision_utils.cpp ../src/collision_utils.h ../src/rect.h ../include/olcPixelGameEngine.h
+		g++ -c -g ../src/collision_utils.cpp
 clean :
-		rm main main.o camera.o program.o entity.o assets.o matrix_utils.o cutscenes.o arena.o player.o rect.o
+		rm main main.o camera.o program.o entity.o assets.o matrix_utils.o cutscenes.o arena.o player.o rect.o collision_utils.o
